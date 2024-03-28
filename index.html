@@ -2,8 +2,9 @@
 <html>
   <head>
     <title>Clustered Network</title>
-    <script src="http://d3js.org/d3.v2.js"></script>
     <script src="./tableau.extensions.1.latest.js"></script>
+    <script src="http://d3js.org/d3.v2.js"></script>
+
     <style type="text/css">
       svg {
         border: 1px solid #ccc;
@@ -53,46 +54,44 @@
 
       var fill = d3.scale.category20();
 
-      tableau.extensions.initializeAsync().then(function() {
-      loadDataFromTableau();
-    });
-
-    function loadDataFromTableau() {
-      const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[1];
-      const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[0];
-
-      worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
-        let nodes = dataTableNodes.data.map(row => {
-          return {
-            name: row[0].formattedValue,
-            group: parseInt(row[1].formattedValue)
-          };
+    tableau.extensions.initializeAsync().then(function() {
+            loadDataFromTableau();
         });
 
-        worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
-          let links = dataTableEdges.data.map(row => {
-            return {
-              source: row[0].formattedValue,
-              target: row[1].formattedValue,
-              value: parseInt(row[2].formattedValue)
-            };
-          }); 
+        function loadDataFromTableau() {
+            const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
+            const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
 
-          createD3Visualization({nodes: nodes, links: links});
-        });
-      });
-    }
+            worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
+                let nodes = dataTableNodes.data.map(row => {
+                    return {
+                        name: row[0].formattedValue,
+                        group: parseInt(row[1].formattedValue)
+                    };
+                });
 
-    function createD3Visualization(graph) {
-      // Your existing D3.js visualization code here
-      // Replace json_data with graph
-      var nodesDiv = document.getElementById('nodesDisplay');
-      var linksDiv = document.getElementById('linksDisplay');
+                worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
+                    let links = dataTableEdges.data.map(row => {
+                        return {
+                            source: row[0].formattedValue,
+                            target: row[1].formattedValue,
+                            value: parseInt(row[2].formattedValue)
+                        };
+                    }); 
 
-      nodesDiv.innerHTML = '<h3>Nodes</h3><pre>' + JSON.stringify(graph.nodes, null, 2) + '</pre>';
-      linksDiv.innerHTML = '<h3>Links</h3><pre>' + JSON.stringify(graph.links, null, 2) + '</pre>';
-      data = graph;
-    }
+                    createVisualization({nodes: nodes, links: links});
+                });
+            });
+        }
+
+        function createVisualization(graph) {
+            // Display data as HTML
+            var nodesDiv = document.getElementById('nodesDisplay');
+            var linksDiv = document.getElementById('linksDisplay');
+
+            nodesDiv.innerHTML = '<h3>Nodes</h3><pre>' + JSON.stringify(graph.nodes, null, 2) + '</pre>';
+            linksDiv.innerHTML = '<h3>Links</h3><pre>' + JSON.stringify(graph.links, null, 2) + '</pre>';
+        }
       function noop() { return false; }
 
       function nodeid(n) {
