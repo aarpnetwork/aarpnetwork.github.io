@@ -1,34 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Network Graph with D3.js v2 and Tableau</title>
-    <script src="https://d3js.org/d3.v2.min.js"></script>
-    <script src="./tableau.extensions.1.latest.js"></script>
-    <style>
-        .link {
-            stroke: #999;
-            stroke-opacity: 0.6;
-        }
-
-        .node circle {
-            stroke: #fff;
-            stroke-width: 1.5px;
-        }
-
-        .node text {
-            pointer-events: none;
-            font-size: 10px;
-            text-anchor: middle;
-        }
-    </style>
+    <title>Display Tableau Data</title>
+    <script src="https://connectors.tableau.com/libs/tableau-2.min.js"></script>
 </head>
 <body>
-    <svg width="960" height="600"></svg>
+    <div id="nodesDisplay"></div>
+    <div id="linksDisplay"></div>
 
     <script type="text/javascript">
-        var nodesData, linksData;
-
         tableau.extensions.initializeAsync().then(function() {
             loadDataFromTableau();
         });
@@ -38,7 +18,7 @@
             const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
 
             worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
-                nodesData = dataTableNodes.data.map(row => {
+                let nodes = dataTableNodes.data.map(row => {
                     return {
                         id: row[0].formattedValue,
                         group: parseInt(row[1].formattedValue)
@@ -46,68 +26,26 @@
                 });
 
                 worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
-                    linksData = dataTableEdges.data.map(row => {
+                    let links = dataTableEdges.data.map(row => {
                         return {
                             source: row[0].formattedValue,
                             target: row[1].formattedValue,
                             value: parseInt(row[2].formattedValue)
                         };
-                    });
+                    }); 
 
-                    // Call function to create visualization with the loaded data
-                    createVisualization();
+                    createVisualization({nodes: nodes, links: links});
                 });
             });
         }
 
-        function createVisualization() {
-            var graph = {
-                nodes: nodesData,
-                links: linksData
-            };
+        function createVisualization(graph) {
+            // Display data as HTML
+            var nodesDiv = document.getElementById('nodesDisplay');
+            var linksDiv = document.getElementById('linksDisplay');
 
-            var width = 960,
-                height = 600;
-            var color = d3.scale.category20();
-            var force = d3.layout.force()
-                .nodes(graph.nodes)
-                .links(graph.links)
-                .size([width, height])
-                .linkDistance(60)
-                .charge(-300)
-                .start();
-
-            var svg = d3.select("svg")
-                .attr("width", width)
-                .attr("height", height);
-
-            var link = svg.selectAll(".link")
-                .data(graph.links)
-                .enter().append("line")
-                .attr("class", "link")
-                .style("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-            var node = svg.selectAll(".node")
-                .data(graph.nodes)
-                .enter().append("g")
-                .attr("class", "node")
-                .call(force.drag);
-
-            node.append("circle")
-                .attr("r", 5)
-                .style("fill", function(d) { return color(d.group); });
-
-            node.append("title")
-                .text(function(d) { return d.id; });
-
-            force.on("tick", function() {
-                link.attr("x1", function(d) { return d.source.x; })
-                    .attr("y1", function(d) { return d.source.y; })
-                    .attr("x2", function(d) { return d.target.x; })
-                    .attr("y2", function(d) { return d.target.y; });
-
-                node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-            });
+            nodesDiv.innerHTML = '<h3>Nodes</h3><pre>' + JSON.stringify(graph.nodes, null, 2) + '</pre>';
+            linksDiv.innerHTML = '<h3>Links</h3><pre>' + JSON.stringify(graph.links, null, 2) + '</pre>';
         }
     </script>
 </body>
