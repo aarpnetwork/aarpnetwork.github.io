@@ -33,33 +33,21 @@
     </style>
   </head>
   <body>
+        <div id="nodesDisplay">this is div</div>
+    <div id="linksDisplay">this is div</div>
+
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
-    <div id="nodesDisplay"></div>
-    <div id="linksDisplay"></div>
 
 
     <script type="text/javascript">
-      var width = 960,     // svg width
-        height = 600,     // svg height
-        dr = 4,      // default point radius
-        off = 15,    // cluster hull offset
-        collapse = {}, // collapsed clusters
-        data, net, force, hullg, hull, linkg, link, nodeg, node;
-
-      var curve = d3.svg.line()
-        .interpolate("cardinal-closed")
-        .tension(.85);
-
-      var fill = d3.scale.category20();
-
  tableau.extensions.initializeAsync().then(function() {
             loadDataFromTableau();
         });
 
         function loadDataFromTableau() {
-            const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
-            const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
+            const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[1];
+            const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[0];
 
             worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
                 let nodes = dataTableNodes.data.map(row => {
@@ -91,6 +79,20 @@
             nodesDiv.innerHTML = '<h3>Nodes</h3><pre>' + JSON.stringify(graph.nodes, null, 2) + '</pre>';
             linksDiv.innerHTML = '<h3>Links</h3><pre>' + JSON.stringify(graph.links, null, 2) + '</pre>';
         }
+
+
+       var width = 960,     // svg width
+        height = 600,     // svg height
+        dr = 4,      // default point radius
+        off = 15,    // cluster hull offset
+        collapse = {}, // collapsed clusters
+        data, net, force, hullg, hull, linkg, link, nodeg, node;
+
+      var curve = d3.svg.line()
+        .interpolate("cardinal-closed")
+        .tension(.85);
+
+      var fill = d3.scale.category20();
 
       function noop() { return false; }
 
