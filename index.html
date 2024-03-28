@@ -1,122 +1,114 @@
-
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-    .links line {
-        stroke: #999;
-        stroke-opacity: 0.6;
-    }
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Network Graph with D3.js v2 and Tableau</title>
+    <script src="https://d3js.org/d3.v2.min.js"></script>
+    <script src="./tableau.extensions.1.latest.js"></script>
+    <style>
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+        }
 
-    .nodes circle {
-        stroke: #fff;
-        stroke-width: 1.5px;
-    }
-</style>
-<svg width="960" height="600"></svg>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="./tableau.extensions.1.latest.js"></script>
-<script>
-    var svg = d3.select("svg"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
+        .node circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
+        .node text {
+            pointer-events: none;
+            font-size: 10px;
+            text-anchor: middle;
+        }
+    </style>
+</head>
+<body>
+    <svg width="960" height="600"></svg>
 
-    var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2));
+    <script type="text/javascript">
+        var nodesData, linksData;
 
-    (async () => {
-        // Initialize Tableau Extensions API
-        await tableau.extensions.initializeAsync();
-
-        // Get the worksheets containing nodes and edges data
-        const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
-        const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
-
-        // Fetch the underlying data for nodes and edges
-        const dataTableNodes = await worksheetNodes.getUnderlyingDataAsync();
-        const dataTableEdges = await worksheetEdges.getUnderlyingDataAsync();
-
-        // Process the data for nodes and edges
-        var nodes = dataTableNodes.data.map(row => {
-            return {
-                id: row[0].formattedValue,
-                group: row[1].formattedValue
-            };
+        tableau.extensions.initializeAsync().then(function() {
+            loadDataFromTableau();
         });
 
-        var edges = dataTableEdges.data.map(row => {
-            return {
-                source: row[0].formattedValue,
-                target: row[1].formattedValue,
-                value: row[2].formattedValue
+        function loadDataFromTableau() {
+            const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
+            const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
+
+            worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
+                nodesData = dataTableNodes.data.map(row => {
+                    return {
+                        id: row[0].formattedValue,
+                        group: parseInt(row[1].formattedValue)
+                    };
+                });
+
+                worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
+                    linksData = dataTableEdges.data.map(row => {
+                        return {
+                            source: row[0].formattedValue,
+                            target: row[1].formattedValue,
+                            value: parseInt(row[2].formattedValue)
+                        };
+                    });
+
+                    // Call function to create visualization with the loaded data
+                    createVisualization();
+                });
+            });
+        }
+
+        function createVisualization() {
+            var graph = {
+                nodes: nodesData,
+                links: linksData
             };
-        });
 
-        // Create the graph object
-        var graph = {
-            nodes: nodes,
-            links: edges
-        };
+            var width = 960,
+                height = 600;
+            var color = d3.scale.category20();
+            var force = d3.layout.force()
+                .nodes(graph.nodes)
+                .links(graph.links)
+                .size([width, height])
+                .linkDistance(60)
+                .charge(-300)
+                .start();
 
-        var link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(graph.links)
-            .enter().append("line")
-            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+            var svg = d3.select("svg")
+                .attr("width", width)
+                .attr("height", height);
 
-        var node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(graph.nodes)
-            .enter().append("circle")
-            .attr("r", 5)
-            .attr("fill", function(d) { return color(d.group); })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
+            var link = svg.selectAll(".link")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("class", "link")
+                .style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-        node.append("title")
-            .text(function(d) { return d.id; });
+            var node = svg.selectAll(".node")
+                .data(graph.nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .call(force.drag);
 
-        simulation
-            .nodes(graph.nodes)
-            .on("tick", ticked);
+            node.append("circle")
+                .attr("r", 5)
+                .style("fill", function(d) { return color(d.group); });
 
-        simulation.force("link")
-            .links(graph.links);
+            node.append("title")
+                .text(function(d) { return d.id; });
 
-        function ticked() {
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
+            force.on("tick", function() {
+                link.attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
 
-            node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
+                node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+            });
         }
-
-        function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-
-        function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-    })();
-</script>
+    </script>
+</body>
+</html>
