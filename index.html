@@ -34,6 +34,8 @@
   <body>
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
+    <div id="nodesDisplay"></div>
+    <div id="linksDisplay"></div>
 
 
 
@@ -56,8 +58,8 @@
     });
 
     function loadDataFromTableau() {
-      const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[1];
-      const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[0];
+      const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
+      const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
 
       worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
         let nodes = dataTableNodes.data.map(row => {
@@ -90,7 +92,6 @@
       nodesDiv.innerHTML = '<h3>Nodes</h3><pre>' + JSON.stringify(graph.nodes, null, 2) + '</pre>';
       linksDiv.innerHTML = '<h3>Links</h3><pre>' + JSON.stringify(graph.links, null, 2) + '</pre>';
       data = graph;
-      init();
     }
       function noop() { return false; }
 
