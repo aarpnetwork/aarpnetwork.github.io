@@ -327,24 +327,42 @@ function highlightNode() {
 }
 
 
+    
       function init() {
-        
-
         if (force) force.stop();
 
-        net = network(json_data, net, getGroup, collapse);
+        net = network(data, net, getGroup, collapse);
 
         force = d3.layout.force()
             .nodes(net.nodes)
             .links(net.links)
             .size([width, height])
-            
+            .linkDistance(function(l, i) {
+  var n1 = l.source, n2 = l.target;
+  // Check if nodes belong to different groups
+  if (n1.group !== n2.group) {
+    // Return a constant distance for links between different groups
+    return 500; // You can adjust this value as needed
+  } else {
+    // Original distance calculation for nodes within the same group
+    return 30 +
+      Math.min(20 * Math.min((n1.size || (n1.group != n2.group ? n1.group_data.size : 0)),
+                             (n2.size || (n1.group != n2.group ? n2.group_data.size : 0))),
+               -30 +
+               30 * Math.min((n1.link_count || (n1.group != n2.group ? n1.group_data.link_count : 0)),
+                             (n2.link_count || (n1.group != n2.group ? n2.group_data.link_count : 0))),
+               100);
+  }
+})
+
           .linkStrength(function(l, i) {
           return 1;
           })
-          .gravity(0.05)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-          .charge(-600)    // ... charge is important to turn single-linked groups to the outside
-          .friction(0.5)   // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
+          .gravity(0.1)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
+          .charge(-800)    // ... charge is important to turn single-linked groups to the outside
+          .friction(0.5) 
+          .alpha(0.1) // Start with a lower alpha
+          // Adjust the alpha decay rate  // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
             .start();
 
         hullg.selectAll("path.hull").remove();
@@ -355,10 +373,8 @@ function highlightNode() {
             .attr("d", drawCluster)
             .style("fill", function(d) { return fill(d.group); })
             .on("click", function(d) {
-             console.log("hull click", d, arguments, this, collapse[d.group]);
-             collapse[d.group] = true; 
-             init();
-             
+      console.log("hull click", d, arguments, this, collapse[d.group]);
+            collapse[d.group] = true; init();
           });
 
         link = linkg.selectAll("line.link").data(net.links, linkid);
@@ -370,8 +386,7 @@ function highlightNode() {
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; })
             .style("stroke-width", function(d) { return d.size || 1; })
-        .on("mouseover", function(d) { highlightNodesAndLinks(d, true); })
-    .on("mouseout", function(d) { highlightNodesAndLinks(d, false); });
+;
 
         node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
         node.exit().remove();
@@ -382,15 +397,29 @@ function highlightNode() {
             .attr("r", function(d) { return d.size ? d.size + dr : dr+1; })
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; })
-        .each(function(d) { console.log(this.id); })
+            .each(function(d) { console.log(this.id); })
             .style("fill", function(d) { return fill(d.group); })
-        .on("mouseover", function(d) { highlightNodesAndLinks(d, true); })
-    .on("mouseout", function(d) { highlightNodesAndLinks(d, false); })
-    .on("click", function(d) { highlightNodesAndLinks(d, true); })
+            .on("mouseover", function(d) { link
+                 .style('stroke', function(l) {
+    if (d === l.source || d === l.target)
+      return 'red'; // Change color for connected links
+    else
+      return 'grey'; // Default color for unconnected links
+  })   
+
+ 
+                
+        })
+    .on("mouseout", function(d) {link.style('stroke', 'grey'); // Reset link color to default
+  
+  // Reset the node size to default
+
+
+})
             .on("click", function(d) {
-            console.log("node click", d, arguments, this, collapse[d.group]);
-            collapse[d.group] = !collapse[d.group];
-            init();
+      console.log("node click", d, arguments, this, collapse[d.group]);
+              collapse[d.group] = !collapse[d.group];
+          init();
             });
         
 
