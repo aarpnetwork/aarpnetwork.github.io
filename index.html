@@ -33,9 +33,9 @@
     </style>
   </head>
   <body>
-    <input type="text" id="nodeIdInput" placeholder="Enter node ID">
+    <input type="text" id="nodeIdInput" placeholder="Enter node IDkjkhnk">
 <button onclick="highlightNode()">Highlight Node</button>
-  <div id="dataDisplay"></div>
+<div id="jsonDataDisplay"></div>
 <div id="debugArea" style="border:1px solid black; padding:10px; margin-top:10px; background-color: #f0f0f0;">
     <strong>Debug Area:</strong>
     <pre id="debugContent"></pre>
@@ -64,65 +64,47 @@
             loadDataFromTableau();
         });
 
-        tableau.extensions.initializeAsync().then(function() {
-    loadDataFromTableau();
-});
+        function loadDataFromTableau() {
+            const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
+            const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
 
-function loadDataFromTableau() {
-    const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
-    const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
+            worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
+                let nodes = dataTableNodes.data.map(row => {
+                    return {
+                        name: row[0].formattedValue,
+                        group: parseInt(row[1].formattedValue, 10)
+                    };
+                });
 
-    worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
-        worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
-            displayData(dataTableNodes, dataTableEdges);
-            init();
-        });
-    });
-}
+                worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
+                    let links = dataTableEdges.data.map(row => {
+                        return {
+                            source: parseInt(row[1].formattedValue, 10), // Convert source to an integer
+                            target: parseInt(row[0].formattedValue, 10), // Convert target to an integer
+                            value: parseInt(row[2].formattedValue, 10) 
+                        };
+                    });
 
-function displayData(dataTableNodes, dataTableEdges) {
-    var dataDisplayDiv = document.getElementById('dataDisplay');
-    dataDisplayDiv.innerHTML = '<h3>Worksheet Data</h3>';
+                    json_data.nodes = nodes; 
+                    json_data.links = links;
 
-    // Display Nodes
-    var nodesTable = createTableFromDataTable(dataTableNodes, 'Nodes');
-    dataDisplayDiv.appendChild(nodesTable);
-
-    // Display Edges
-    var edgesTable = createTableFromDataTable(dataTableEdges, 'Edges');
-    dataDisplayDiv.appendChild(edgesTable);
-}
-
-function createTableFromDataTable(dataTable, title) {
-    var table = document.createElement('table');
-    table.style.width = '100%';
-    table.border = '1';
-
-    // Table title
-    var header = table.createTHead();
-    var headerRow = header.insertRow(0);
-    var headerCell = headerRow.insertCell(0);
-    headerCell.colSpan = dataTable.columns.length;
-    headerCell.innerHTML = '<b>' + title + '</b>';
-
-    // Column headers
-    var row = table.insertRow(-1);
-    dataTable.columns.forEach(column => {
-        var headerCell = row.insertCell(-1);
-        headerCell.innerHTML = '<b>' + column.fieldName + '</b>';
-    });
-
-    // Rows
-    dataTable.data.forEach(dataRow => {
-        var row = table.insertRow(-1);
-        dataRow.forEach(cell => {
-            var cell = row.insertCell(-1);
-            cell.innerHTML = cell.formattedValue;
-        });
-    });
-
-    return table;
-}
+                    data=json_data;
+                    displayJsonData(data);
+                    for (var i=0; i<data.links.length; ++i) {
+                    o = data.links[i];
+                    o.source = data.nodes[o.source];
+                    o.target = data.nodes[o.target];
+      }
+                    
+                    init();
+                });
+            });
+        }
+      
+        function displayJsonData(jsonData) {
+            var jsonDataDiv = document.getElementById('jsonDataDisplay');
+            jsonDataDiv.innerHTML = '<h3>JSON Data</h3><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
+        }
 
       function noop() { return false; }
 
