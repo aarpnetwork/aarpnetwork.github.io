@@ -3,7 +3,7 @@
   <head>
     <title>Clustered Network</title>
     <script src="./tableau.extensions.1.latest.js"></script>
-    <script src="http://d3js.org/d3.v2.js"></script>
+    <script src="https://d3js.org/d3.v2.min.js"></script>
 
     <style type="text/css">
       svg {
@@ -89,7 +89,7 @@
                     json_data.links = links;
 
                     data=json_data;
-                    displayJsonData(data);
+                    
                     for (var i=0; i<data.links.length; ++i) {
                     o = data.links[i];
                     o.source = data.nodes[o.source];
