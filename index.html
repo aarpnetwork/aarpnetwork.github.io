@@ -269,7 +269,7 @@ vis.call(zoom);
       
 
 
-    init();
+  
  
       
 var linkedByIndex = {};
@@ -332,7 +332,9 @@ function highlightNode() {
 
             document.getElementById("weightSlider").oninput = function() {
   updateLinks(this.value);
+   init(); 
 };
+      
 function updateLinks(threshold) {
   link.style("opacity", function(d) {
     return d.linkValue >= threshold ? d.linkValue : 0;
