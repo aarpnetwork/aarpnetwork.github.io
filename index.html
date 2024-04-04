@@ -399,7 +399,7 @@ function highlightNode() {
     return (sourceGroupCollapsed && targetGroupCollapsed) ? d.size : d.linkValue; 
   }) 
             .style("stroke", "#333")  // Default stroke color
-    .style("opacity", function(d) {
+    .style("stroke-opacity", function(d) {
         return d.linkValue >= threshold ? 1 : 0;
     });
 
