@@ -34,6 +34,7 @@
 
 <label for="weightSlider">Link Weight Threshold:</label>
 <input type="range" id="weightSlider" min="1" max="5" value="1" step="1">
+<button id="updateButton" onclick="updateLinks()">Update Links</button>
 
     <script type="text/javascript">
        var width = 1920,     // svg width
@@ -330,11 +331,10 @@ function highlightNode() {
   }
 }
 
-            document.getElementById("weightSlider").oninput = function() {
-  updateLinks(this.value);
-};
-function updateLinks(threshold) {
-  link.style("opacity", function(d) {
+           function updateLinks() {
+    var threshold = document.getElementById("weightSlider").value;
+    
+    link.style("opacity", function(d) {
     return d.linkValue >= threshold ? d.linkValue : 0;
   });
 }
@@ -468,7 +468,7 @@ function updateLinks(threshold) {
           node.attr("cx", function(d) { return d.x; })
               .attr("cy", function(d) { return d.y; });
         });
-        updateLinks(document.getElementById("weightSlider").value);
+       
       }
 
     </script>
