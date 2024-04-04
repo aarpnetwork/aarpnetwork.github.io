@@ -330,7 +330,7 @@ function highlightNode() {
   }
 }
 
-            document.getElementById("weightSlider").oninput = function() {
+  document.getElementById("weightSlider").oninput = function() {
   updateLinks(this.value);
    init(); 
 };
@@ -470,7 +470,7 @@ function updateLinks(threshold) {
           node.attr("cx", function(d) { return d.x; })
               .attr("cy", function(d) { return d.y; });
         });
-        updateLinks(document.getElementById("weightSlider").value);
+        
       }
 
     </script>
