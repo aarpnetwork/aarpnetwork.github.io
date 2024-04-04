@@ -33,7 +33,7 @@
 <button onclick="highlightNode()">Highlight Node</button>
 
 <label for="weightSlider">Link Weight Threshold:</label>
-<input type="range" id="weightSlider" min="1" max="15" value="1" step="1">
+<input type="range" id="weightSlider" min="1" max="5" value="1" step="1">
 
     <script type="text/javascript">
        var width = 1920,     // svg width
@@ -372,7 +372,7 @@ function updateLinks(threshold) {
           return 1;
           })
           .gravity(0.1)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-          .charge(-800)    // ... charge is important to turn single-linked groups to the outside
+          .charge(-1500)    // ... charge is important to turn single-linked groups to the outside
           .friction(0.5) 
           .alpha(0.1) // Start with a lower alpha
           // Adjust the alpha decay rate  // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
