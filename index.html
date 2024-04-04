@@ -401,6 +401,7 @@ function highlightNode() {
             .style("stroke", "#333")  // Default stroke color
     .style("stroke-opacity", function(d) {
         return d.linkValue >= threshold ? 1 : 0;
+        init();
     });
 
         node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
@@ -428,7 +429,7 @@ function highlightNode() {
     if (d === l.source || d === l.target)
       return 'red'; // Change color for connected links
     else
-      return 'grey'; // Default color for unconnected links
+      return #333; // Default color for unconnected links
   })   
 
  
@@ -466,7 +467,7 @@ function highlightNode() {
         });
         
       }
-
+         
     </script>
   </body>
 </html>
