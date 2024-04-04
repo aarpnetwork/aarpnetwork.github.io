@@ -25,21 +25,15 @@
         fill: lightsteelblue;
         fill-opacity: 0.3;
       }
-      line.link {
-        stroke: #333;
-        stroke-opacity: 0.5;
-        pointer-events: none;
-      }
+      
     </style>
   </head>
   <body>
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
-<div id="jsonDataDisplay"></div>
-<div id="debugArea" style="border:1px solid black; padding:10px; margin-top:10px; background-color: #f0f0f0;">
-    <strong>Debug Area:</strong>
-    <pre id="debugContent"></pre>
-</div>
+
+<label for="weightSlider">Link Weight Threshold:</label>
+<input type="range" id="weightSlider" min="1" max="15" value="1" step="1">
 
     <script type="text/javascript">
        var width = 1920,     // svg width
@@ -95,6 +89,14 @@
                     o.source = data.nodes[o.source];
                     o.target = data.nodes[o.target];
       }
+
+                  data.nodes.forEach(node => node.degree = 0);
+                  data.links.forEach(link => {
+  link.source.degree += 1;
+  link.target.degree += 1;
+});
+
+
                     
                     init();
                 });
@@ -162,6 +164,7 @@
               n.x = gn[i].x + Math.random();
               n.y = gn[i].y + Math.random();
             }
+            n.degree = data.nodes[k].degree;
           } else {
             // the node is part of a collapsed cluster
             if (l.size == 0) {
@@ -196,6 +199,7 @@
           var i = (u<v ? u+"|"+v : v+"|"+u),
               l = lm[i] || (lm[i] = {source:u, target:v, size:0});
           l.size += 1;
+          l.linkValue = e.value;
         }
         for (i in lm) { links.push(lm[i]); }
 
@@ -326,6 +330,15 @@ function highlightNode() {
   }
 }
 
+            document.getElementById("weightSlider").oninput = function() {
+  updateLinks(this.value);
+};
+function updateLinks(threshold) {
+  link.style("opacity", function(d) {
+    return d.linkValue >= threshold ? d.linkValue : 0;
+  });
+}
+
 
     
       function init() {
@@ -385,8 +398,14 @@ function highlightNode() {
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; })
-            .style("stroke-width", function(d) { return d.size || 1; })
-;
+            .style("stroke-width", function(d) {
+    var sourceGroupCollapsed = collapse[d.source.group];
+    var targetGroupCollapsed = collapse[d.target.group];
+    
+    return (sourceGroupCollapsed && targetGroupCollapsed) ? d.size : d.linkValue; 
+  }) 
+            .style("stroke", "#333")  // Default stroke color
+    .style("stroke-opacity", 0.6);
 
         node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
         node.exit().remove();
@@ -394,7 +413,16 @@ function highlightNode() {
             // if (d.size) -- d.size > 0 when d is a group node.
             .attr("class", function(d) { return "node" + (d.size?"":" leaf"); })
         .attr("id", function(d) { return"node" +d.name; })
-            .attr("r", function(d) { return d.size ? d.size + dr : dr+1; })
+                     .attr("r", function(d) {
+        // Check if d.degree is present
+        if (d.degree !== undefined) {
+            // Directly use d.degree or scale it as needed
+            return d.degree; // You may apply scaling here if needed
+        } else {
+            // Fallback to using d.size or a default radius
+            return d.size ? d.size + dr : dr + 1;
+        }
+    })
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; })
             .each(function(d) { console.log(this.id); })
@@ -440,6 +468,7 @@ function highlightNode() {
           node.attr("cx", function(d) { return d.x; })
               .attr("cy", function(d) { return d.y; });
         });
+        updateLinks(document.getElementById("weightSlider").value);
       }
 
     </script>
