@@ -33,7 +33,8 @@
 <button onclick="highlightNode()">Highlight Node</button>
 
 <label for="weightSlider">Link Weight Threshold:</label>
-<input type="range" id="weightSlider" min="1" max="5" value="1" step="1" oninput="init()">
+<label for="weightSlider">Link Weight Threshold:</label>
+<input type="range" id="weightSlider" min="1" max="5" value="1" step="1">
 
     <script type="text/javascript">
        var width = 1920,     // svg width
@@ -330,6 +331,15 @@ function highlightNode() {
   }
 }
 
+      
+document.getElementById("weightSlider").oninput = function() {
+  updateLinks(this.value);
+};
+function updateLinks(threshold) {
+  link.style("opacity", function(d) {
+    return d.linkValue >= threshold ? d.linkValue : 0;
+  });
+}
 
 
     
@@ -382,7 +392,7 @@ function highlightNode() {
             collapse[d.group] = true; init();
           });
 
-        var threshold = document.getElementById("weightSlider").value;
+        v
         
         link = linkg.selectAll("line.link").data(net.links, linkid);
         link.exit().remove();
@@ -399,10 +409,7 @@ function highlightNode() {
     return (sourceGroupCollapsed && targetGroupCollapsed) ? d.size : d.linkValue; 
   }) 
             .style("stroke", "#333")  // Default stroke color
-    .style("stroke-opacity", function(d) {
-        return d.linkValue >= threshold ? 1 : 0;
-        init();
-    });
+    .style("stroke-opacity", 0.5);
 
         node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
         node.exit().remove();
@@ -465,7 +472,7 @@ function highlightNode() {
           node.attr("cx", function(d) { return d.x; })
               .attr("cy", function(d) { return d.y; });
         });
-        
+          updateLinks(document.getElementById("weightSlider").value);
       }
          
     </script>
