@@ -67,7 +67,8 @@
                 let nodes = dataTableNodes.data.map(row => {
                     return {
                         name: row[0].formattedValue,
-                        group: parseInt(row[1].formattedValue, 10)
+                        group: parseInt(row[1].formattedValue, 10),
+                        label: row[2].formattedValue
                     };
                 });
 
