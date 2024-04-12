@@ -67,8 +67,7 @@
                 let nodes = dataTableNodes.data.map(row => {
                     return {
                         name: row[0].formattedValue,
-                        group: parseInt(row[2].formattedValue, 10),
-                        label: row[1].formattedValue
+                        group: parseInt(row[1].formattedValue, 10)
                     };
                 });
 
@@ -85,7 +84,7 @@
                     json_data.links = links;
 
                     data=json_data;
-                    displayJsonData(data);
+                    
                     for (var i=0; i<data.links.length; ++i) {
                     o = data.links[i];
                     o.source = data.nodes[o.source];
@@ -167,7 +166,6 @@
               n.y = gn[i].y + Math.random();
             }
             n.degree = data.nodes[k].degree;
-            n.label = data.nodes[k].label;
           } else {
             // the node is part of a collapsed cluster
             if (l.size == 0) {
