@@ -29,7 +29,7 @@
     </style>
   </head>
   <body>
-    <div id="jsonDataDisplay"></div>
+
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
 <div id="jsonDataDisplay"></div>
@@ -68,8 +68,7 @@
                 let nodes = dataTableNodes.data.map(row => {
                     return {
                         name: row[0].formattedValue,
-                        group: parseInt(row[2].formattedValue, 10),
-                        label: row[1].formattedValue
+                        group: parseInt(row[1].formattedValue, 10)
                     };
                 });
 
@@ -86,7 +85,7 @@
                     json_data.links = links;
 
                     data=json_data;
-                    displayJsonData(data);
+                
                     for (var i=0; i<data.links.length; ++i) {
                     o = data.links[i];
                     o.source = data.nodes[o.source];
