@@ -29,7 +29,7 @@
     </style>
   </head>
   <body>
-<div id="jsonDataDisplay"></div>
+
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
 <label for="weightSlider">Link Weight Threshold:</label>
@@ -86,7 +86,6 @@
                     json_data.links = links;
 
                     data=json_data;
-                    displayJsonData(data);
                     for (var i=0; i<data.links.length; ++i) {
                     o = data.links[i];
                     o.source = data.nodes[o.source];
