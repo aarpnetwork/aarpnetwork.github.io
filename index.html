@@ -57,18 +57,9 @@
       var fill = d3.scale.category20();
 
       tableau.extensions.initializeAsync().then(function() {
-        const dashboard = tableau.extensions.dashboardContent.dashboard;
-
-        // Add event listeners for filter changes on each worksheet
-        dashboard.worksheets.forEach(function(worksheet) {
-          worksheet.addEventListener(tableau.TableauEventType.FilterChanged, function(filterEvent) {
-            // Reload data from Tableau and update the visualization
             loadDataFromTableau();
-          });
         });
 
-        loadDataFromTableau();
-      });
 
         function loadDataFromTableau() {
             const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
