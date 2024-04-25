@@ -57,6 +57,10 @@
       var fill = d3.scale.category20();
 
       tableau.extensions.initializeAsync().then(function() {
+        tableau.extensions.dashboardContent.dashboard.addEventListener(tableau.TableauEventType.FilterChanged, function(filterEvent) {
+          // Reload data from Tableau and update the visualization
+          loadDataFromTableau();
+        });
             loadDataFromTableau();
         });
 
