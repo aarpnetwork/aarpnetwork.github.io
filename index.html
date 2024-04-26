@@ -25,11 +25,37 @@
         fill: lightsteelblue;
         fill-opacity: 0.3;
       }
+      .legend {
+        position: absolute;
+        left: 20px;
+        top: 300px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      .legend-color {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+      }
+
+      .legend-label {
+        font-size: 12px;
+      }
       
     </style>
   </head>
   <body>
-
+        <div class="legend"></div>
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
 <label for="weightSlider">Link Weight Threshold:</label>
@@ -180,6 +206,7 @@
             }
             n.degree = data.nodes[k].degree;
             n.label = data.nodes[k].label;
+            n.Subtopic=data.nodes[k].Subtopic;
           } else {
             // the node is part of a collapsed cluster
             if (l.size == 0) {
@@ -384,6 +411,32 @@ function highlightNode() {
         if (force) force.stop();
 
         net = network(data, net, getGroup, collapse);
+
+    // Create legend
+// Create legend
+        // Create groupColors object
+        var groupColors = {};
+        data.nodes.forEach(function(d) {
+          if (d.Subtopic) {
+            groupColors[d.Subtopic] = fill(d.group);
+          }
+        });
+
+        // Create legend
+        var legend = d3.select(".legend").html(""); // Clear previous legend
+
+        var legendItems = legend.selectAll(".legend-item")
+            .data(Object.entries(groupColors))
+            .enter().append("div")
+            .attr("class", "legend-item");
+
+        legendItems.append("span")
+            .attr("class", "legend-color")
+            .style("background-color", function(d) { return d[1]; });
+
+        legendItems.append("span")
+            .attr("class", "legend-label")
+            .text(function(d) { return d[0]; });
 
         force = d3.layout.force()
             .nodes(net.nodes)
