@@ -551,7 +551,7 @@ function highlightNode() {
                 var sourceGroupCollapsed = collapse[d.group];
         
         if (!sourceGroupCollapsed) {
-            window.open(d.name, "_blank");
+            window.open(d.label, "_blank");
         }
       console.log("node click", d, arguments, this, collapse[d.group]);
               collapse[d.group] = !collapse[d.group];
