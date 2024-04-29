@@ -108,9 +108,8 @@
                 let nodes = dataTableNodes.data.map(row => {
                     return {
                         name: row[0].formattedValue,
-                        group: parseInt(row[3].formattedValue, 10),
-                        label: row[1].formattedValue,
-                        Subtopic: row[4].formattedValue
+                        group: parseInt(row[2].formattedValue, 10),
+                        label: row[1].formattedValue
                     };
                 });
 
