@@ -56,9 +56,6 @@
   </head>
   <body>
         <div class="legend"></div>
-
-    <div id="nodesTable"></div>
-    <div id="edgesTable"></div>
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
 <label for="weightSlider">Link Weight Threshold:</label>
@@ -101,53 +98,50 @@
       });
 
 
-function loadDataFromTableau() {
-    const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
-    const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
+        function loadDataFromTableau() {
+            const worksheetNodes = tableau.extensions.dashboardContent.dashboard.worksheets[0];
+            const worksheetEdges = tableau.extensions.dashboardContent.dashboard.worksheets[1];
 
-    // Load data from Nodes worksheet
-    worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
-        let nodesHTML = "<table><tr>";
-        // Add header row for nodes
-        dataTableNodes.columns.forEach(column => {
-            nodesHTML += `<th>${column.fieldName}</th>`;
-        });
-        nodesHTML += "</tr>";
-
-        // Add data rows for nodes
-        dataTableNodes.data.forEach(row => {
-            nodesHTML += "<tr>";
-            row.forEach(cell => {
-                nodesHTML += `<td>${cell.formattedValue}</td>`;
-            });
-            nodesHTML += "</tr>";
-        });
-        nodesHTML += "</table>";
-        document.getElementById("nodesTable").innerHTML = nodesHTML;
-
-        // Load data from Edges worksheet
-        worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
-            let edgesHTML = "<table><tr>";
-            // Add header row for edges
-            dataTableEdges.columns.forEach(column => {
-                edgesHTML += `<th>${column.fieldName}</th>`;
-            });
-            edgesHTML += "</tr>";
-
-            // Add data rows for edges
-            dataTableEdges.data.forEach(row => {
-                edgesHTML += "<tr>";
-                row.forEach(cell => {
-                    edgesHTML += `<td>${cell.formattedValue}</td>`;
+            worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
+                let nodes = dataTableNodes.data.map(row => {
+                    return {
+                        name: row[0].formattedValue,
+                        group: parseInt(row[2].formattedValue, 10),
+                        label: row[1].formattedValue
+                    };
                 });
-                edgesHTML += "</tr>";
-            });
-            edgesHTML += "</table>";
-            document.getElementById("edgesTable").innerHTML = edgesHTML;
-        });
-    });
-}
 
+                worksheetEdges.getUnderlyingDataAsync().then(dataTableEdges => {
+                    let links = dataTableEdges.data.map(row => {
+                        return {
+                            source: parseInt(row[1].formattedValue, 10), // Convert source to an integer
+                            target: parseInt(row[0].formattedValue, 10), // Convert target to an integer
+                            value: parseInt(row[2].formattedValue, 10) 
+                        };
+                    });
+
+                    json_data.nodes = nodes; 
+                    json_data.links = links;
+
+                    data=json_data;
+                    for (var i=0; i<data.links.length; ++i) {
+                    o = data.links[i];
+                    o.source = data.nodes[o.source];
+                    o.target = data.nodes[o.target];
+      }
+
+                  data.nodes.forEach(node => node.degree = 0);
+                  data.links.forEach(link => {
+  link.source.degree += 1;
+  link.target.degree += 1;
+});
+
+
+                    
+                    init();
+                });
+            });
+        }
       
         function displayJsonData(jsonData) {
             var jsonDataDiv = document.getElementById('jsonDataDisplay');
