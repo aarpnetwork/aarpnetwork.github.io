@@ -56,7 +56,6 @@
   </head>
   <body>
         <div class="legend"></div>
-
     <input type="text" id="nodeIdInput" placeholder="Enter node ID">
 <button onclick="highlightNode()">Highlight Node</button>
 <label for="weightSlider">Link Weight Threshold:</label>
@@ -106,10 +105,9 @@
             worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
                 let nodes = dataTableNodes.data.map(row => {
                     return {
-                        name: row[1].formattedValue,
-                        group: parseInt(row[3].formattedValue, 10),
-                        label: row[2].formattedValue,
-                        Subtopic: row[0].formattedValue
+                        name: row[0].formattedValue,
+                        group: parseInt(row[2].formattedValue, 10),
+                        label: row[1].formattedValue
                     };
                 });
 
@@ -126,7 +124,6 @@
                     json_data.links = links;
 
                     data=json_data;
-
                     for (var i=0; i<data.links.length; ++i) {
                     o = data.links[i];
                     o.source = data.nodes[o.source];
