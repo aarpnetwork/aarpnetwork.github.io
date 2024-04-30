@@ -455,7 +455,7 @@ function highlightNode() {
   // Check if nodes belong to different groups
   if (n1.group !== n2.group) {
     // Return a constant distance for links between different groups
-    return 500; // You can adjust this value as needed
+    return 3000; // You can adjust this value as needed
   } else {
     // Original distance calculation for nodes within the same group
     return 30 +
@@ -471,11 +471,10 @@ function highlightNode() {
           .linkStrength(function(l, i) {
           return 1;
           })
-          .gravity(0.1)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-          .charge(-1500)    // ... charge is important to turn single-linked groups to the outside
-          .friction(0.5) 
-          .alpha(0.1) // Start with a lower alpha
-          // Adjust the alpha decay rate  // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
+        .gravity(0.05) 
+        .charge(-1000) 
+        .friction(0.8) 
+          .alpha(0.1)
             .start();
 
         hullg.selectAll("path.hull").remove();
