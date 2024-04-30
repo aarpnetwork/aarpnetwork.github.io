@@ -553,16 +553,17 @@ function highlightNode() {
         link.style('stroke', 'grey');
         console.log("mouseout:", d.name);
     })
-            .on("click", function(d) {
-                var sourceGroupCollapsed = collapse[d.group];
-        
-        if (!sourceGroupCollapsed) {
-            window.open(d.label, "_blank");
-        }
-      console.log("node click", d, arguments, this, collapse[d.group]);
-              collapse[d.group] = !collapse[d.group];
-          init();
-            });
+    .on("click", function(d) {
+            if (d.size > 0) {
+                // If the clicked node is a group node, toggle its collapse state
+                collapse[d.group] = !collapse[d.group];// Set collapseAll to false to prevent collapsing all groups
+                init();
+            } else {
+                // If the clicked node is a leaf node, open the URL in a new tab
+                window.open(d.label, "_blank");
+            }
+            console.log("node click", d, arguments, this, collapse[d.group]);
+        });
         
 
 
