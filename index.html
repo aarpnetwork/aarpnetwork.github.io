@@ -106,9 +106,10 @@
             worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
                 let nodes = dataTableNodes.data.map(row => {
                     return {
-                        name: row[0].formattedValue,
-                        group: parseInt(row[2].formattedValue, 10),
-                        label: row[1].formattedValue
+                        name: row[1].formattedValue,
+                        group: parseInt(row[3].formattedValue, 10),
+                        label: row[2].formattedValue,
+                        Subtopic: row[0].formattedValue
                     };
                 });
 
