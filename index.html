@@ -6,33 +6,46 @@
     <script src="https://d3js.org/d3.v2.min.js"></script>
 
     <style type="text/css">
+    <style type="text/css">
+      body {
+        background-color: #000;
+        font: 10px sans-serif;
+      }
+
       svg {
         border: 1px solid #ccc;
       }
-      body {
-        font: 10px sans-serif;
-      }
+      
       circle.node {
         fill: lightsteelblue;
         stroke: #555;
         stroke-width: 3px;
       }
+      
       circle.leaf {
         stroke: #fff;
         stroke-width: 1.5px;
       }
+      
       path.hull {
         fill: lightsteelblue;
         fill-opacity: 0.3;
       }
+      
       .legend {
         position: absolute;
         left: 20px;
         top: 300px;
-        padding: 20px;
+        padding: 10px;
         background-color: rgba(255, 255, 255, 0.8);
         border-radius: 5px;
-        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .legend-title {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
       }
 
       .legend-item {
@@ -51,13 +64,114 @@
       .legend-label {
         font-size: 12px;
       }
-      
+
+      label[for="weightSlider"] {
+        font-size: 14px;
+        color: #fff;
+        margin-right: 10px;
+      }
+
+      input[type="range"]#weightSlider {
+        -webkit-appearance: none;
+        width: 200px;
+        height: 10px;
+        background: #ddd;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+        border-radius: 5px;
+      }
+
+      input[type="range"]#weightSlider:hover {
+        opacity: 1;
+      }
+
+      input[type="range"]#weightSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #4CAF50;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+
+      input[type="range"]#weightSlider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #4CAF50;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+
+      button#updateButton {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      input[type="range"]#zoomSlider {
+        -webkit-appearance: none;
+        width: 200px;
+        height: 10px;
+        background: #ddd;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+        border-radius: 5px;
+      }
+
+      input[type="range"]#zoomSlider:hover {
+        opacity: 1;
+      }
+
+      input[type="range"]#zoomSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #2196F3;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+
+      input[type="range"]#zoomSlider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #2196F3;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+
+      button#collapseAllButton {
+        background-color: #2196F3;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
     </style>
   </head>
   <body>
         <div class="legend"></div>
-    <input type="text" id="nodeIdInput" placeholder="Enter node ID">
-<button onclick="highlightNode()">Highlight Node</button>
+  // <input type="text" id="nodeIdInput" placeholder="Enter node ID">
+// <button onclick="highlightNode()">Highlight Node</button>
 <label for="weightSlider">Link Weight Threshold:</label>
 <input type="range" id="weightSlider" min="1" max="5" value="1" step="1">
 <button id="updateButton" onclick="updateLinks()">Update Links</button>
