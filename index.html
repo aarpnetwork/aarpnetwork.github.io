@@ -421,31 +421,61 @@ function highlightNode() {
 
         net = network(data, net, getGroup, collapse);
 
+        var darkBlueShades = [
+        "#0C2D48", "#1B4F72", "#2E86C1", "#154360", "#1A5276", "#21618C",  "#21618C"
+    ];
+    var darkGreenShades = [
+        "#1E8449", "#196F3D", "#27AE60", "#1D8348", "#186A3B", "#1E824C"
+    ];
+
+    // Maintaining a mapping of subtopics to their colors for legend use
+    var legendItemsMap = {};
+    var groupColors = {};
+
+    data.nodes.forEach(function(d) {
+        var index = d.group % 6;  // Ensuring index is within the range of color arrays
+        var color;
+        if (d.Subtopic) {
+            switch (d.Subtopic) {
+                case "brain-health":
+                case "conditions-treatments":
+                case "drugs-supplements":
+                case "health-insurance":
+                case "healthy-living":
+                case "medicare-insurance":
+                case "medicare-qa-tool":
+                    color = darkBlueShades[index];
+                    break;
+                case "budgeting-saving":
+                case "credit-loans-debt":
+                case "investing":
+                case "scams-fraud":
+                case "taxes":
+                    color = darkGreenShades[index];
+                    break;
+                default:
+                    color = "#FFC0CB"; // Pink as default for unspecified subtopics
+            }
+            groupColors[d.group] = color;
+            legendItemsMap[d.Subtopic] = color;  // Link subtopics to colors for the legend
+        } else {
+            groupColors[d.group] = "#FFC0CB"; // Pink as default if no subtopic
+        }
+    });
+
     // Create legend
-// Create legend
-        // Create groupColors object
-        var groupColors = {};
-        data.nodes.forEach(function(d) {
-          if (d.Subtopic) {
-            groupColors[d.Subtopic] = fill(d.group);
-          }
-        });
+    var legend = d3.select(".legend").html(""); // Clear previous legend
 
-        // Create legend
-        var legend = d3.select(".legend").html(""); // Clear previous legend
-
-        var legendItems = legend.selectAll(".legend-item")
-            .data(Object.entries(groupColors))
-            .enter().append("div")
+    Object.entries(legendItemsMap).forEach(([label, color]) => {
+        var legendItem = legend.append("div")
             .attr("class", "legend-item");
-
-        legendItems.append("span")
+        legendItem.append("span")
             .attr("class", "legend-color")
-            .style("background-color", function(d) { return d[1]; });
-
-        legendItems.append("span")
+            .style("background-color", color);
+        legendItem.append("span")
             .attr("class", "legend-label")
-            .text(function(d) { return d[0]; });
+            .text(label);
+    });
 
         force = d3.layout.force()
             .nodes(net.nodes)
@@ -484,7 +514,7 @@ function highlightNode() {
           .enter().append("path")
             .attr("class", "hull")
             .attr("d", drawCluster)
-            .style("fill", function(d) { return fill(d.group); })
+            .style("fill", function(d) { return groupColors[d.group]; })
             .on("click", function(d) {
       console.log("hull click", d, arguments, this, collapse[d.group]);
             collapse[d.group] = true; init();
@@ -526,7 +556,7 @@ function highlightNode() {
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; })
             .each(function(d) { console.log(this.id); })
-            .style("fill", function(d) { return fill(d.group); })
+            .style("fill", function(d) { return groupColors[d.group]; })
             .on("mouseover", function(d) {
         var sourceGroupCollapsed = collapse[d.group];
         
