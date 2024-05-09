@@ -481,22 +481,22 @@ function isConnected(a, b) {
   return linkedByIndex[a.index + "," + b.index] || a.index === b.index;
 }
 
-      
-function highlightNode() {
-  // Log the selector to ensure it's what you expect
-  var nodeId = document.getElementById("nodeIdInput").value.trim();
-  var selector = "#node" + nodeId;
-  console.log("Selector:", selector); // Check this in your browser's console
+function highlightNodesAndLinks(d, highlight) {
+  if (highlight) {
+    node.style("stroke", function(o) {
+      return isConnected(d, o) ? "red" : "#555";
+    }).style("stroke-width", function(o) {
+      return isConnected(d, o) ? 4 : 3;
+    });
 
-  // Attempt to select and highlight the node
-  var node = d3.select(selector);
-  console.log("Node selected:", node.node()); // This should log the SVG circle element if found
-
-  // If the node is found, highlight it
-  if (!node.empty()) {
-    node.style("fill", "orange");
+    link.style("stroke", function(o) {
+      return (o.source === d || o.target === d) ? "red" : "#333";
+    }).style("stroke-opacity", function(o) {
+      return (o.source === d || o.target === d) ? 1 : 0.5;
+    });
   } else {
-    console.log("No node found with the ID:", selector);
+    node.style("stroke", "#555").style("stroke-width", 3);
+    link.style("stroke", "#333").style("stroke-opacity", 0.5);
   }
 }
 
@@ -668,12 +668,8 @@ function highlightNode() {
                    .style("top", (d3.event.pageY - 10) + "px");
         }
         
-        link.style('stroke', function(l) {
-            if (d === l.source || d === l.target)
-                return 'red';
-            else
-                return 'white';
-        });
+     highlightNodesAndLinks(d, true);
+              
     })
     .on("mouseout", function(d) {
         var sourceGroupCollapsed = collapse[d.group];
@@ -682,7 +678,7 @@ function highlightNode() {
             tooltip.style("display", "none");
         }
         
-        link.style('stroke', 'white');
+        highlightNodesAndLinks(d, false);
         console.log("mouseout:", d.name);
     })
     .on("click", function(d) {
