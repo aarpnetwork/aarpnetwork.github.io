@@ -670,7 +670,7 @@ function highlightNodesAndLinks(d, highlight) {
             .each(function(d) { console.log(this.id); })
             .style("fill", function(d) { return groupColors[d.group]; })
             .on("mouseover", function(d) {
-             var tooltipText = d.size > 0 ? d.groupName : d.label;
+             var tooltipText = d.size > 0 ? d.groupName : d.name;
             tooltip.style("display", "block")
                    .html(tooltipText)
                    .style("left", (d3.event.pageX + 10) + "px")
