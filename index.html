@@ -33,9 +33,12 @@ line.link {
     </style>
   </head>
   <body>
+
+    <div id="tooltip" style="position: absolute; display: none; background-color: rgba(0, 0, 0, 0.8); color: white; padding: 5px; border-radius: 5px;"></div>
+
     <script type="text/javascript">
-var width = 960,     // svg width
-    height = 600,     // svg height
+var width = 1920,     // svg width
+    height = 1080,     // svg height
     dr = 4,      // default point radius
     off = 15,    // cluster hull offset
     expand = {}, // expanded clusters
@@ -240,6 +243,46 @@ linkg = vis.append("g");
 nodeg = vis.append("g");
 
 
+      var zoomSlider = document.getElementById("zoomSlider");
+var zoom = d3.behavior.zoom()
+    .scaleExtent([0.1, 10])
+    .on("zoom", zoomed);
+
+// Function to handle zoom event
+function zoomed() {
+  var scale = d3.event.scale;
+  var translate = d3.event.translate;
+
+  // Apply the transform to the group containing the nodes and links
+  hullg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+  linkg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+  nodeg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+  // Update the zoom slider value
+  zoomSlider.value = scale;
+}
+
+// Function to handle zoom slider change
+function zoomChanged() {
+  var scale = parseFloat(zoomSlider.value);
+  var translate = zoom.translate();
+
+  // Apply the transform to the group containing the nodes and links
+  hullg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+  linkg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+  nodeg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+  // Update the zoom scale
+  zoom.scale(scale);
+}
+
+// Apply the zoom behavior to the SVG element
+vis.call(zoom);
+
+// Add event listener to the zoom slider
+zoomSlider.addEventListener("input", zoomChanged);
+
+
 
 function init() {
   if (force) force.stop();
@@ -307,6 +350,16 @@ console.log("hull click", d, arguments, this, expand[d.group]);
       .attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; })
       .style("fill", function(d) { return fill(d.group); })
+                .on("mouseover", function(d) {
+             var tooltipText = d.size > 0 ? d.groupName : d.name;
+            tooltip.style("display", "block")
+                   .html(tooltipText)
+                   .style("left", (d3.event.pageX + 10) + "px")
+                   .style("top", (d3.event.pageY - 10) + "px");
+        
+
+              
+    })
       .on("click", function(d) {
 console.log("node click", d, arguments, this, expand[d.group]);
         expand[d.group] = !expand[d.group];
