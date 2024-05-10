@@ -208,7 +208,7 @@
             worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
                 let nodes = dataTableNodes.data.map(row => {
                     return {
-                        ID: parseInt(row[3].formattedValue, 10),
+                        ID: parseInt(row[1].formattedValue, 10),
                         group: parseInt(row[3].formattedValue, 10),
                         name: row[2].formattedValue,
                         Subtopic: row[0].formattedValue
