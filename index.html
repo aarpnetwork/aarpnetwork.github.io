@@ -33,6 +33,7 @@ line.link {
     </style>
   </head>
   <body>
+      <div id="jsonDataDisplay"></div>
 
     <div id="tooltip" style="position: absolute; display: none; background-color: rgba(0, 0, 0, 0.8); color: white; padding: 5px; border-radius: 5px;"></div>
 
@@ -54,8 +55,8 @@ var curve = d3.svg.line()
     .tension(.85);
 
 var fill = d3.scale.category20();
-
-
+      
+      
       tableau.extensions.initializeAsync().then(function() {
             loadDataFromTableau();
         });
@@ -103,6 +104,12 @@ var fill = d3.scale.category20();
                     init();
                 });
             });
+        }
+
+
+        function displayJsonData(jsonData) {
+            var jsonDataDiv = document.getElementById('jsonDataDisplay');
+            jsonDataDiv.innerHTML = '<h3>JSON Data</h3><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
         }
 
 function noop() { return false; }
@@ -288,7 +295,7 @@ function init() {
   if (force) force.stop();
 
   net = network(data, net, getGroup, expand);
-
+  displayJsonData(net);
   force = d3.layout.force()
       .nodes(net.nodes)
       .links(net.links)
