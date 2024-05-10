@@ -158,6 +158,7 @@
     </style>
   </head>
   <body>
+        <div id="jsonDataDisplay"></div>
         <div class="legend"></div>
 <label for="weightSlider">Link Similarity Threshold:</label>
 <input type="range" id="weightSlider" min="1" max="5" value="1" step="1">
@@ -227,6 +228,7 @@
                     json_data.links = links;
 
                     data=json_data;
+                    displayJsonData(data);
                     for (var i=0; i<data.links.length; ++i) {
                     o = data.links[i];
                     o.source = data.nodes[o.source];
