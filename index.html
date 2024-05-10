@@ -524,7 +524,7 @@ function highlightNodesAndLinks(d, highlight) {
         if (force) force.stop();
 
         net = network(data, net, getGroup, collapse);
-
+        displayJsonData(net);
         var darkBlueShades = [
         "#0C2D48", "#1B4F72", "#2E86C1", "#154360", "#1A5276", "#21618C",  "#21618C"
     ];
