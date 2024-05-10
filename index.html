@@ -20,7 +20,7 @@
             worksheetNodes.getUnderlyingDataAsync().then(dataTableNodes => {
                 let nodes = dataTableNodes.data.map(row => {
                     return {
-                        id: row[0].formattedValue,
+                        name: row[0].formattedValue,
                         group: parseInt(row[1].formattedValue)
                     };
                 });
