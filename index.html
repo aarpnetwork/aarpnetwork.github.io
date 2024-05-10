@@ -106,11 +106,10 @@ var fill = d3.scale.category20();
             });
         }
 
-
-        function displayJsonData(jsonData) {
-            var jsonDataDiv = document.getElementById('jsonDataDisplay');
-            jsonDataDiv.innerHTML = '<h3>JSON Data</h3><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
-        }
+function displayJsonData(jsonData) {
+    var jsonDataDiv = document.getElementById('jsonDataDisplay');
+    jsonDataDiv.innerHTML = '<h3>JSON Data</h3><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
+}
 
 function noop() { return false; }
 
