@@ -320,6 +320,7 @@
                 l.x = gc[i].x / gc[i].count;
                 l.y = gc[i].y / gc[i].count;
               }
+               l.groupName = data.nodes[k].Subtopic;
             }
             l.nodes.push(n);
           }
@@ -604,7 +605,16 @@ function highlightNodesAndLinks(d, highlight) {
           return 1;
           })
         .gravity(0.05) 
-        .charge(-1000) 
+       .charge(function(d) {
+    // Increase the charge strength for all nodes
+    if (d.size > 0) {
+      // Stronger repulsion for group nodes
+      return -5000;
+    } else {
+      // Stronger repulsion for individual nodes
+      return -2000;
+    }
+  }) 
         .friction(0.8) 
           .alpha(0.1)
             .start();
@@ -651,7 +661,7 @@ function highlightNodesAndLinks(d, highlight) {
             return d.degree; // You may apply scaling here if needed
         } else {
             // Fallback to using d.size or a default radius
-            return d.size ? d.size + dr : dr + 1;
+            return d.size ? 50 : dr + 1;
         }
     })
             .attr("cx", function(d) { return d.x; })
@@ -659,14 +669,12 @@ function highlightNodesAndLinks(d, highlight) {
             .each(function(d) { console.log(this.id); })
             .style("fill", function(d) { return groupColors[d.group]; })
             .on("mouseover", function(d) {
-        var sourceGroupCollapsed = collapse[d.group];
-        
-        if (!sourceGroupCollapsed) {
+             var tooltipText = d.size > 0 ? d.groupName : d.label;
             tooltip.style("display", "block")
-                   .html(d.label)
+                   .html(tooltipText)
                    .style("left", (d3.event.pageX + 10) + "px")
                    .style("top", (d3.event.pageY - 10) + "px");
-        }
+        
         
      highlightNodesAndLinks(d, true);
               
@@ -678,7 +686,7 @@ function highlightNodesAndLinks(d, highlight) {
             tooltip.style("display", "none");
         }
         
-        highlightNodesAndLinks(d, false);
+       
         console.log("mouseout:", d.name);
     })
     .on("click", function(d) {
