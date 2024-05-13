@@ -667,7 +667,7 @@ function highlightNodesAndLinks(d, highlight) {
             return d.degree; // You may apply scaling here if needed
         } else {
             // Fallback to using d.size or a default radius
-            return d.size ? 100 : dr + 1;
+            return d.size ? d.size : dr + 1;
         }
     })
             .attr("cx", function(d) { return d.x; })
