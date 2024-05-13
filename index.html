@@ -487,19 +487,19 @@ function isConnected(a, b) {
 function highlightNodesAndLinks(d, highlight) {
   if (highlight) {
     node.style("stroke", function(o) {
-      return isConnected(d, o) ? "red" : "#555";
+      return isConnected(d, o) ? "red" : "white";
     }).style("stroke-width", function(o) {
       return isConnected(d, o) ? 4 : 3;
     });
 
     link.style("stroke", function(o) {
-      return (o.source === d || o.target === d) ? "red" : "#333";
+      return (o.source === d || o.target === d) ? "red" : "white";
     }).style("stroke-opacity", function(o) {
-      return (o.source === d || o.target === d) ? 1 : 0.5;
+      return (o.source === d || o.target === d) ? 2 : 1;
     });
   } else {
     node.style("stroke", "#555").style("stroke-width", 3);
-    link.style("stroke", "#333").style("stroke-opacity", 0.5);
+    link.style("stroke", "white").style("stroke-opacity", 0.5);
   }
 }
 
@@ -652,7 +652,7 @@ function highlightNodesAndLinks(d, highlight) {
     return (sourceGroupCollapsed && targetGroupCollapsed) ? d.size : d.linkValue; 
   }) 
             .style("stroke", "white")  // Default stroke color
-    .style("stroke-opacity", 0.6);
+    .style("stroke-opacity", 1);
 
         node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
         node.exit().remove();
