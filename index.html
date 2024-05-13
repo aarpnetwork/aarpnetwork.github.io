@@ -154,6 +154,19 @@
         cursor: pointer;
         border-radius: 4px;
       }
+        button#removeHighlightButton {
+        background-color: #FF5733;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
       
     </style>
   </head>
@@ -167,6 +180,7 @@
 <div id="tooltip" style="position: absolute; display: none; background-color: rgba(0, 0, 0, 0.8); color: white; padding: 15px; border-radius: 10px; font-size: 16px; border: 2px solid white; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);"></div>
 <input type="range" id="zoomSlider" min="0.1" max="10" step="0.1" value="1">
 <button id="collapseAllButton" onclick="collapseAllGroups()">Collapse All</button>
+<button id="removeHighlightButton" onclick="removeHighlight()">Remove Highlight</button>
 
     <script type="text/javascript">
        var width = 1800,     // svg width
@@ -517,6 +531,14 @@ function highlightNodesAndLinks(d, highlight) {
         });
         init();
       }
+
+function removeHighlight() {
+  node.style("stroke", "#555")
+      .style("stroke-width", 3);
+
+  link.style("stroke", "white")
+      .style("stroke-opacity", 1);
+}
 
 
     
