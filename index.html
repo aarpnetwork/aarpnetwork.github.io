@@ -612,39 +612,54 @@ function removeHighlight() {
             .links(net.links)
             .size([width, height])
             .linkDistance(function(l, i) {
-  var n1 = l.source, n2 = l.target;
-  // Check if nodes belong to different groups
-  if (n1.group !== n2.group) {
-    // Return a constant distance for links between different groups
-    return 3000; // You can adjust this value as needed
+  var n1 = l.source, n2 = l.target,
+      g1 = n1.group_data || n1,
+      g2 = n2.group_data || n2,
+      n1_is_group = n1.size || 0,
+      n2_is_group = n2.size || 0,
+      rv = 300;
+
+  if (n1.group == n2.group) {
+    if ((n1.link_count < 2 && !n1_is_group) || (n2.link_count < 2 && !n2_is_group)) {
+      rv = 2;
+    } else if (!n1_is_group && !n2_is_group) {
+      rv = 2;
+    } else if (g1.link_count < 4 || g2.link_count < 4) {
+      rv = 100;
+    }
   } else {
-    // Original distance calculation for nodes within the same group
-    return 30 +
-      Math.min(20 * Math.min((n1.size || (n1.group != n2.group ? n1.group_data.size : 0)),
-                             (n2.size || (n1.group != n2.group ? n2.group_data.size : 0))),
-               -30 +
-               30 * Math.min((n1.link_count || (n1.group != n2.group ? n1.group_data.link_count : 0)),
-                             (n2.link_count || (n1.group != n2.group ? n2.group_data.link_count : 0))),
-               100);
+    // Increased distances for links between different nodes
+    if (!n1_is_group && !n2_is_group) {
+      rv = 1000; // Increased distance for individual nodes in different groups
+    } else if ((n1_is_group && n2_is_group) && (g1.link_count < 4 || g2.link_count < 4)) {
+      rv = 2000; // Increased distance for group nodes with few links in different groups
+    } else if ((n1_is_group && g1.link_count < 2) || (n2_is_group && g2.link_count < 2)) {
+      rv = 1500; // Increased distance for group nodes with very few links in different groups
+    } else if (!n1_is_group || !n2_is_group) {
+      rv = 2000; // Increased distance for individual nodes connected to group nodes in different groups
+    }
   }
+
+  return l.distance = rv;
 })
+
 
           .linkStrength(function(l, i) {
           return 1;
           })
         .gravity(0.05) 
-       .charge(function(d) {
+        .charge(function(d) {
     // Increase the charge strength for all nodes
     if (d.size > 0) {
       // Stronger repulsion for group nodes
       return -5000;
     } else {
       // Stronger repulsion for individual nodes
-      return -4000;
+      return -3000;
     }
   }) 
-        .friction(0.7) 
-          .alpha(0.1)
+        .friction(0.8) 
+          .alpha(0.1) 
             .start();
 
         hullg.selectAll("path.hull").remove();
