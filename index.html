@@ -708,13 +708,7 @@ function removeHighlight() {
               
     })
     .on("mouseout", function(d) {
-        var sourceGroupCollapsed = collapse[d.group];
-        
-        if (!sourceGroupCollapsed) {
-            tooltip.style("display", "none");
-        }
-        
-       
+        tooltip.style("display", "none");
         console.log("mouseout:", d.name);
     })
     .on("click", function(d) {
