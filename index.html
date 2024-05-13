@@ -630,11 +630,11 @@ function removeHighlight() {
   } else {
     // Increased distances for links between different nodes
     if (!n1_is_group && !n2_is_group) {
-      rv = 1000; // Increased distance for individual nodes in different groups
+      rv = 2000; // Increased distance for individual nodes in different groups
     } else if ((n1_is_group && n2_is_group) && (g1.link_count < 4 || g2.link_count < 4)) {
       rv = 2000; // Increased distance for group nodes with few links in different groups
     } else if ((n1_is_group && g1.link_count < 2) || (n2_is_group && g2.link_count < 2)) {
-      rv = 1500; // Increased distance for group nodes with very few links in different groups
+      rv = 2000; // Increased distance for group nodes with very few links in different groups
     } else if (!n1_is_group || !n2_is_group) {
       rv = 2000; // Increased distance for individual nodes connected to group nodes in different groups
     }
