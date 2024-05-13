@@ -708,8 +708,8 @@ function removeHighlight() {
               
     })
     .on("mouseout", function(d) {
-        tooltip.style("display", "none");
-        console.log("mouseout:", d.name);
+      var tooltipText = d.size > 0 ? "none" : "none";
+        tooltip.style("display", tooltipText);
     })
     .on("click", function(d) {
             if (d.size > 0) {
