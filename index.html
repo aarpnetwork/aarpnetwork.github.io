@@ -611,37 +611,42 @@ function removeHighlight() {
             .nodes(net.nodes)
             .links(net.links)
             .size([width, height])
-            .linkDistance(function(l, i) {
-  var n1 = l.source, n2 = l.target,
-      g1 = n1.group_data || n1,
-      g2 = n2.group_data || n2,
-      n1_is_group = n1.size || 0,
-      n2_is_group = n2.size || 0,
-      rv = 300;
+  .linkDistance(function(l, i) {
+    var n1 = l.source, n2 = l.target,
+        g1 = n1.group_data || n1,
+        g2 = n2.group_data || n2,
+        n1_is_group = n1.size || 0,
+        n2_is_group = n2.size || 0,
+        rv = 300; // default link distance
 
-  if (n1.group == n2.group) {
-    if ((n1.link_count < 2 && !n1_is_group) || (n2.link_count < 2 && !n2_is_group)) {
-      rv = 2;
-    } else if (!n1_is_group && !n2_is_group) {
-      rv = 2;
-    } else if (g1.link_count < 4 || g2.link_count < 4) {
-      rv = 100;
+    // Check if either group is collapsed
+    if (collapse[n1.group] || collapse[n2.group]) {
+      rv = 3000; // Set to a constant value when collapsed
+    } else {
+      if (n1.group == n2.group) {
+        if ((n1.link_count < 2 && !n1_is_group) || (n2.link_count < 2 && !n2_is_group)) {
+          rv = 2;
+        } else if (!n1_is_group && !n2_is_group) {
+          rv = 2;
+        } else if (g1.link_count < 4 || g2.link_count < 4) {
+          rv = 100;
+        }
+      } else {
+        // Increased distances for links between different nodes
+        if (!n1_is_group && !n2_is_group) {
+          rv = 2000; // Increased distance for individual nodes in different groups
+        } else if ((n1_is_group && n2_is_group) && (g1.link_count < 4 || g2.link_count < 4)) {
+          rv = 2000; // Increased distance for group nodes with few links in different groups
+        } else if ((n1_is_group && g1.link_count < 2) || (n2_is_group && g2.link_count < 2)) {
+          rv = 2000; // Increased distance for group nodes with very few links in different groups
+        } else if (!n1_is_group || !n2_is_group) {
+          rv = 2000; // Increased distance for individual nodes connected to group nodes in different groups
+        }
+      }
     }
-  } else {
-    // Increased distances for links between different nodes
-    if (!n1_is_group && !n2_is_group) {
-      rv = 2000; // Increased distance for individual nodes in different groups
-    } else if ((n1_is_group && n2_is_group) && (g1.link_count < 4 || g2.link_count < 4)) {
-      rv = 2000; // Increased distance for group nodes with few links in different groups
-    } else if ((n1_is_group && g1.link_count < 2) || (n2_is_group && g2.link_count < 2)) {
-      rv = 2000; // Increased distance for group nodes with very few links in different groups
-    } else if (!n1_is_group || !n2_is_group) {
-      rv = 2000; // Increased distance for individual nodes connected to group nodes in different groups
-    }
-  }
 
-  return l.distance = rv;
-})
+    return l.distance = rv;
+  })
 
 
           .linkStrength(function(l, i) {
