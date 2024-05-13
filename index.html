@@ -7,10 +7,10 @@
 
     <style type="text/css">
       svg {
-        border: 1px solid #ccc;
+        border: 1px solid black;
       }
       body {
-        background-color: white;
+        background-color: black;
         font: 10px sans-serif;
       }
       circle.node {
@@ -525,10 +525,12 @@ function highlightNodesAndLinks(d, highlight) {
 
         net = network(data, net, getGroup, collapse);
         var darkBlueShades = [
-        "#0C2D48", "#1B4F72", "#2E86C1", "#154360", "#1A5276", "#21618C",  "#21618C"
+       "#FFFF33", "#FFEA00", "#FFD700", "#FFEB3B", "#FFEE58",
+    "#FFF176", "#FFF59D", "#FFF9C4", "#FFFDE7", "#FFF8E1"
     ];
     var darkGreenShades = [
-        "#1E8449", "#196F3D", "#27AE60", "#1D8348", "#186A3B", "#1E824C"
+       "#76FF03", "#64DD17", "#B2FF59", "#CCFF90", "#AEEA00",
+    "#C6FF00", "#CDDC39", "#AED581", "#C5E1A5", "#DCEDC8"
     ];
 
     // Maintaining a mapping of subtopics to their colors for legend use
@@ -547,6 +549,7 @@ function highlightNodesAndLinks(d, highlight) {
                 case "healthy-living":
                 case "medicare-insurance":
                 case "medicare-qa-tool":
+                case "tele-town-halls":
                     color = darkBlueShades[index];
                     break;
                 case "budgeting-saving":
@@ -554,6 +557,8 @@ function highlightNodesAndLinks(d, highlight) {
                 case "investing":
                 case "scams-fraud":
                 case "taxes":
+                case "estate-planning":
+                case "insurance":
                     color = darkGreenShades[index];
                     break;
                 default:
@@ -613,11 +618,11 @@ function highlightNodesAndLinks(d, highlight) {
       return -5000;
     } else {
       // Stronger repulsion for individual nodes
-      return -2000;
+      return -4000;
     }
   }) 
-        .friction(0.8) 
-          .alpha(0.1)
+        .friction(0.9) 
+          .alpha(0.5)
             .start();
 
         hullg.selectAll("path.hull").remove();
@@ -662,7 +667,7 @@ function highlightNodesAndLinks(d, highlight) {
             return d.degree; // You may apply scaling here if needed
         } else {
             // Fallback to using d.size or a default radius
-            return d.size ? 50 : dr + 1;
+            return d.size ? 100 : dr + 1;
         }
     })
             .attr("cx", function(d) { return d.x; })
